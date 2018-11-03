@@ -1,0 +1,46 @@
+<configuration>
+	<property name="LOG_PATH" value="/logs/application.json" />
+	<appender name="jsonAppender"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_PATH}</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<!-- rollover daily -->
+
+			<fileNamePattern>/logs/imaging-%d{yyyy-MM-dd}.%i.json
+			</fileNamePattern>
+			<!-- each file should be at most 100MB, keep 30 days worth of history, 
+				but at most 20GB -->
+
+			<maxFileSize>100MB</maxFileSize>
+			<maxHistory>30</maxHistory>
+			<totalSizeCap>1GB</totalSizeCap>
+		</rollingPolicy>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+		<encoder>
+			<pattern>%msg%n </pattern>
+		</encoder>
+	</appender>
+
+	<appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+		<encoder>
+			<!--%-5level represents the logging level %d{DATE} prints the current 
+				day %X{Log4jMDCFilter.UUID} (Used to output the MDC (mapped diagnostic context) 
+				associated with the thread that generated the logging event) %m (Used to 
+				output the application supplied message associated with the logging event) -->
+			<pattern>%-5level %d{DATE}|%X{Log4jMDCFilter.UUID}| - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+	<root level="info">
+		<appender-ref ref="jsonAppender" />
+		<appender-ref ref="consoleAppender" />
+	</root>
+</configuration>
